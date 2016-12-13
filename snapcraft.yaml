@@ -13,6 +13,7 @@ apps:
   # dnsmasq apps/parts forked from https://github.com/lool/dnsmasq-snap
   dnsmasq:
     command: bin/dnsmasq
+    daemon: simple
     # The DNS server needs access to the network to function properly
     plugs:
       - network
@@ -33,6 +34,7 @@ parts:
     source: git://thekelleys.org.uk/dnsmasq.git
     organize:
       usr/local/sbin/dnsmasq: bin/dnsmasq
+    # A list of files from a part’s installation to expose in the snap
     snap:
       - bin/dnsmasq
   files-to-copy:
