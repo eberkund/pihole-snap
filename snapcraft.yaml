@@ -1,0 +1,47 @@
+name: pihole
+version: 2.9.6
+summary: A black hole for Internet advertisements
+description: |
+  Pi-hole is a DNS-based, platform-agnostic, network-wide ad blocker.
+# organizer: Pi-hole, LLC.  <adblock@pi-hole.net>
+# icon: setup/gui/Vortex.png
+grade: devel
+confinement: devmode
+
+apps:
+  # Pi-hole is a DNS server at it's core, so we need to install a resolver
+  # dnsmasq apps/parts forked from https://github.com/lool/dnsmasq-snap
+  dnsmasq:
+    command: bin/dnsmasq
+    # The DNS server needs access to the network to function properly
+    plugs:
+      - network
+      - network-bind
+      - network-control
+  # Pi-hole also uses a Web server to redirect traffic
+  # It also doubles as an adminisrative dashboard to view ad-block stats
+  # lighttpd:
+  #   command: bin/lighttpd
+  #   plugs:
+  #     - network
+  #     - network-bind
+  #     -network-control
+
+parts:
+  dnsmasq:
+    plugin: make
+    source: git://thekelleys.org.uk/dnsmasq.git
+    organize:
+      usr/local/sbin/dnsmasq: bin/dnsmasq
+    snap:
+      - bin/dnsmasq
+  files-to-copy:
+    # We need several supplemental files for the DNS and Web servers
+    # Just use the dump plugin to copy them over
+    plugin: dump
+    source: .
+    organize:
+      # We need a custom config file for Pi-hole to run as a DNS server
+      dnsmasq.conf: /var/snap/pihole/common/dnsmasq.conf
+      # Additional hosts file for the DNS server to use
+      gravity.list: /var/snap/pihole/common/gravity.list
