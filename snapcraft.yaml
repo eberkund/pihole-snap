@@ -12,8 +12,8 @@ apps:
   # Pi-hole is a DNS server at it's core, so we need to install a resolver
   # dnsmasq apps/parts forked from https://github.com/lool/dnsmasq-snap
   dnsmasq:
-    command: bin/dnsmasq
-    daemon: simple
+    command: bin/dnsmasq -C /var/snap/pihole/common/dnsmasq.conf
+    daemon: forking
     # The DNS server needs access to the network to function properly
     plugs:
       - network
