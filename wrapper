@@ -77,11 +77,6 @@ replace_hostname() {
   sed -i "s/@HOSTNAME@/$host_name/" ${dnsmasq_conf_location}
 }
 
-replace_ipv4_address() {
-  # Replace the placeholder with IPv4 address
-  sed -i "s/@IPv4@/$ipv4_address/" ${dnsmasq_conf_location}
-}
-
 replace_ipv6_address() {
   # Replace the placeholder with the IPv6 address
   sed -i "s/@IPv6@/$ipv6_address/" ${dnsmasq_conf_location}
@@ -109,7 +104,6 @@ get_available_interfaces
 find_ipv4_interface
 find_ipv4_address
 replace_interface
-replace_ipv4_address
 find_ipv6_address
 replace_ipv6_address
 replace_upstream_servers
