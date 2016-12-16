@@ -3,8 +3,8 @@ version: 2.9.6
 summary: A black hole for Internet advertisements
 description: |
   Pi-hole is a DNS-based, platform-agnostic, network-wide ad blocker.
-# organizer: Pi-hole, LLC.  <adblock@pi-hole.net>
-# icon: setup/gui/Vortex.png
+# vendor: Pi-hole, LLC.  <adblock@pi-hole.net>
+# icon: meta/Vortex.png
 grade: devel
 confinement: devmode
 
