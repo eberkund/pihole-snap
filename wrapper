@@ -28,14 +28,14 @@ set -e
 hostname_file=/etc/hostname
 public_ipv4_to_check_for="8.8.8.8"
 public_ipv6_to_check_for="2001:4860:4860::8888"
-dnsmasq_conf_location=/var/snap/pihole/common/dnsmasq.conf
+dnsmasq_conf_location=/var/snap/pihole/x1/config/dnsmasq.conf
 
 # Swap-in values for the dnsmasq config file
 upstream_one="8.8.8.8"
 upstream_two="8.8.4.4"
 # Slashes need to be escaped to be properly parsed and replaced by sed
-log_facility="\\/var\\/snap\\/pihole\\/common\\/pihole.log"
-addn_hosts="\\/var\\/snap\\/pihole\\/common\\/gravity.list"
+log_facility="\\/var\\/snap\\/pihole\\/x1\\/common\\/pihole.log"
+addn_hosts="\\/var\\/snap\\/pihole\\/x1\\/config\\/gravity.list"
 
 get_hostname() {
   # Check if the hostname file exists since this is the safest way to get the hostname
