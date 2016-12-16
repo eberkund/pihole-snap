@@ -9,34 +9,42 @@ grade: devel
 confinement: devmode
 
 apps:
+  # This is the custom provisioning script
+  # Pi-hole needs to setup a DNS/Web server combo and these services
+  # require special config files for it to work correctly
+  # It runs as a daemon so it will provision the system automatically
+  wrapper:
+    command: bin/wrapper
+    daemon: simple
+    plugs:
+      - content
+
   # Pi-hole is a DNS server at it's core, so we need to install a resolver
   # dnsmasq apps/parts forked from https://github.com/lool/dnsmasq-snap
-  dnsmasq:
-    command: bin/dnsmasq -C /var/snap/pihole/common/dnsmasq.conf
-    daemon: forking
-    # The DNS server needs access to the network to function properly
-    plugs:
-      - network
-      - network-bind
-      - network-control
-  # Pi-hole also uses a Web server to redirect traffic
-  # It also doubles as an adminisrative dashboard to view ad-block stats
-  # lighttpd:
-  #   command: bin/lighttpd
+  # dnsmasq:
+  #   command: bin/dnsmasq -C config/dnsmasq.conf
+  #   daemon: forking
+  #   # The DNS server needs access to the network to function properly
   #   plugs:
+  #     # Can access the network as a client
   #     - network
+  #     # Can access the network as a server
   #     - network-bind
-  #     -network-control
+  #     # Can configure networking which gives wide, privileged access to networking
+  #     - network-control
+  #     - content
 
 parts:
-  dnsmasq:
-    plugin: make
-    source: git://thekelleys.org.uk/dnsmasq.git
-    organize:
-      usr/local/sbin/dnsmasq: bin/dnsmasq
-    # A list of files from a part’s installation to expose in the snap
-    snap:
-      - bin/dnsmasq
+  # dnsmasq:
+  #   plugin: make
+  #   source: git://thekelleys.org.uk/dnsmasq.git
+  #   organize:
+  #     usr/local/sbin/dnsmasq: bin/dnsmasq
+  #   # A list of files from a part’s installation to expose in the snap
+  #   snap:
+  #     - bin/dnsmasq
+  #   after:
+  #     - files-to-copy
   files-to-copy:
     # We need several supplemental files for the DNS and Web servers
     # Just use the dump plugin to copy them over
@@ -44,6 +52,8 @@ parts:
     source: .
     organize:
       # We need a custom config file for Pi-hole to run as a DNS server
-      dnsmasq.conf: /var/snap/pihole/common/dnsmasq.conf
+      dnsmasq.conf: config/dnsmasq.conf
       # Additional hosts file for the DNS server to use
-      gravity.list: /var/snap/pihole/common/gravity.list
+      gravity.list: config/gravity.list
+      # bash script that loads and replaces values in the config file(s)
+      wrapper: bin/wrapper
