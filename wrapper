@@ -37,6 +37,14 @@ upstream_two="8.8.4.4"
 log_facility="\\/var\\/snap\\/pihole\\/x1\\/common\\/pihole.log"
 addn_hosts="\\/var\\/snap\\/pihole\\/x1\\/config\\/gravity.list"
 
+hostname_placeholder="@HOSTNAME@"
+interface_placeholder="@INT@"
+ipv6_placeholder="@IPv6@"
+log_facility_placeholder="@LOGFACILITY@"
+addn_hosts_placeholder="@ADDNHOSTS@"
+upstream_one_placeholder="@DNS1@"
+upstream_two_placeholder="@DNS2@"
+
 get_hostname() {
   # Check if the hostname file exists since this is the safest way to get the hostname
   if [[ -f ${hostname_file} ]]; then
@@ -67,45 +75,23 @@ find_ipv6_address() {
   ipv6_address=$(ip -6 route get ${public_ipv6_to_check_for} | awk -F " " '{ for(i=1;i<=NF;i++) if ($i == "src") print $(i+1) }')
 }
 
-replace_interface() {
+replace_placeholders() {
+  local placeholder=$1
+  local value_to_replace=$2
+  local file_to_edit=$3
   # Replace the placeholder with the interface name
-  sed -i "s/@INT@/$ipv4_interface/" ${dnsmasq_conf_location}
-}
-
-replace_hostname() {
-  # Replace the placeholder with hostname
-  sed -i "s/@HOSTNAME@/$host_name/" ${dnsmasq_conf_location}
-}
-
-replace_ipv6_address() {
-  # Replace the placeholder with the IPv6 address
-  sed -i "s/@IPv6@/$ipv6_address/" ${dnsmasq_conf_location}
-}
-
-replace_log_facility() {
-  # Replace the placeholder with the path to the log file
-  sed -i "s/@LOGFACILITY@/$log_facility/" ${dnsmasq_conf_location}
-}
-
-replace_addn_hosts() {
-  # Replace the placeholder with the path the list of ad-serving domains (gravity)
-  sed -i "s/@ADDNHOSTS@/$addn_hosts/" ${dnsmasq_conf_location}
-}
-
-replace_upstream_servers() {
-  # Replace the placeholder with the upstream DNS servers
-  sed -i "s/@DNS1@/$upstream_one/" ${dnsmasq_conf_location}
-  sed -i "s/@DNS2@/$upstream_two/" ${dnsmasq_conf_location}
+  sed -i "s/$placeholder/$value_to_replace/" ${file_to_edit}
 }
 
 get_hostname
-replace_hostname
+replace_placeholders $hostname_placeholder $host_name ${dnsmasq_conf_location}
 get_available_interfaces
 find_ipv4_interface
 find_ipv4_address
-replace_interface
+replace_placeholders $interface_placeholder $ipv4_interface ${dnsmasq_conf_location}
 find_ipv6_address
-replace_ipv6_address
-replace_upstream_servers
-replace_log_facility
-replace_addn_hosts
+replace_placeholders $ipv6_placeholder $ipv6_address ${dnsmasq_conf_location}
+replace_placeholders $upstream_one_placeholder $upstream_one ${dnsmasq_conf_location}
+replace_placeholders $upstream_two_placeholder $upstream_two ${dnsmasq_conf_location}
+replace_placeholders $log_facility_placeholder $log_facility ${dnsmasq_conf_location}
+replace_placeholders $addn_hosts_placeholder $addn_hosts ${dnsmasq_conf_location}
