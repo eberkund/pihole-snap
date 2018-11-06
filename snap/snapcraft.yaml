@@ -1,0 +1,62 @@
+name: pihole
+version: 4.0
+summary: Network infrastructure swiss-army knife
+description: |
+  Dnsmasq provides network infrastructure for small networks: DNS, DHCP, router
+  advertisement and network boot. It is designed to be lightweight and have a
+  small footprint, suitable for resource constrained routers and firewalls. 
+grade: stable
+confinement: strict
+
+apps:
+  pihole-ftl:
+    command: bin/pihole-FTL
+    plugs:
+      - network
+      - network-bind
+      - network-control
+  dnsmasqd:
+    daemon: simple
+    command: bin/wrapper
+    plugs:
+      - network
+      - network-bind
+      - network-control
+
+parts:
+  nettle: 
+    source: https://ftp.gnu.org/gnu/nettle/nettle-3.4.tar.gz
+    plugin: autotools
+    install-via: prefix
+  gmp: 
+    after: [nettle]
+    source: https://gmplib.org/download/gmp/gmp-6.1.2.tar.bz2
+    plugin: autotools
+    override-build: |
+      export CFLAGS="-fPIC"
+      ./configure
+      make
+      make install
+      
+  pihole-ftl:
+    after: [nettle,gmp]
+    source: https://github.com/pi-hole/FTL.git
+    plugin: make
+    build-packages:
+      - libnetfilter-conntrack-dev
+      - libidn11-dev
+      - m4
+      - build-essential
+    override-pull: |
+      snapcraftctl pull
+      perl -p -i -e 's/\/var\/log\//\/var\/snap\/pihole\/common\//g' memory.c
+      perl -p -i -e 's/\/etc\/pihole/\/var\/snap\/pihole\/common/g' memory.c
+      perl -p -i -e 's/\/etc\/pihole/\/var\/snap\/pihole\/common/g' dnsmasq/config.h
+    override-build: |
+      snapcraftctl build
+      install -D pihole-FTL $SNAPCRAFT_PART_INSTALL/bin/pihole-FTL
+  wrapper:
+    plugin: dump
+    source: .
+    organize:
+      wrapper: bin/wrapper
