@@ -1,97 +1,16 @@
-#!/bin/bash
-# Pi-hole: A black hole for Internet advertisements
-# (c) 2015-2016 by Pi-hole, LLC.
-# A black hole for Internet advertisements.
-#
-# https://pi-hole.net
-#
-# This file is part of Pi-hole.
-# It replaces placeholder values in dnsmasq.conf
-#
-#   Pi-hole is free software: you can redistribute it and/or modify
-#   it under the terms of the GNU Affero General Public License as published by
-#   the Free Software Foundation, either version 3 of the License, or
-#   (at your option) any later version.
-#
-#   Pi-hole is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU General Public License for more details.
-#
-#   You should have received a copy of the GNU Affero General Public License
-#   along with Pi-hole.  If not, see <hhttps://www.gnu.org/licenses/agpl.html>.
+#!/bin/sh
 
-# Exit immediately if a command exits with a non-zero status
 set -e
 
-# Vars for this script
-hostname_file=/etc/hostname
-public_ipv4_to_check_for="8.8.8.8"
-public_ipv6_to_check_for="2001:4860:4860::8888"
-dnsmasq_conf_location=/var/snap/pihole/x1/config/dnsmasq.conf
+CONFIG="$SNAP_COMMON"
+if [ ! -f $CONFIG/dnsmasq.conf ]; then
+  echo "not found"
+  cp $SNAP/configs/* $CONFIG
+fi
+while :; do
+    if [ -e "$CONFIG" ]; then
+        $SNAP/bin/pihole-FTL
+    fi
+    sleep 5
+done
 
-# Swap-in values for the dnsmasq config file
-upstream_one="8.8.8.8"
-upstream_two="8.8.4.4"
-# Slashes need to be escaped to be properly parsed and replaced by sed
-log_facility="\\/var\\/snap\\/pihole\\/x1\\/common\\/pihole.log"
-addn_hosts="\\/var\\/snap\\/pihole\\/x1\\/config\\/gravity.list"
-
-hostname_placeholder="@HOSTNAME@"
-interface_placeholder="@INT@"
-ipv6_placeholder="@IPv6@"
-log_facility_placeholder="@LOGFACILITY@"
-addn_hosts_placeholder="@ADDNHOSTS@"
-upstream_one_placeholder="@DNS1@"
-upstream_two_placeholder="@DNS2@"
-
-get_hostname() {
-  # Check if the hostname file exists since this is the safest way to get the hostname
-  if [[ -f ${hostname_file} ]]; then
-    host_name=$(<${hostname_file})
-    # If it doesn't, use the hostname command
-  elif [[ -x "$(command -v hostname)" ]]; then
-    host_name=$(hostname -f)
-  fi
-}
-
-get_available_interfaces() {
-	# Get only interfaces that are up and are not the loopback
-	up_interfaces=$(ip -o link | awk -F':' '!/lo/ && /UP/ {gsub(/^[ \t]+/, "", $2); print $2}')
-}
-
-find_ipv4_interface() {
-  # Find which interface can reach the Internet
-  ipv4_interface=$(ip route get ${public_ipv4_to_check_for} | awk '{for(i=1;i<=NF;i++)if($i~/dev/)print $(i+1)}')
-}
-
-find_ipv4_address() {
-  # Check the IPv4 address assigned to the interface that can reach the Internet
-	ipv4_address=$(ip -o -f inet addr show dev "$ipv4_interface" | awk '{gsub("/", "", $4); print $4}' | awk 'END {print}')
-}
-
-find_ipv6_address() {
-  # Find the IPv6 address that is used to reach the Internet
-  ipv6_address=$(ip -6 route get ${public_ipv6_to_check_for} | awk -F " " '{ for(i=1;i<=NF;i++) if ($i == "src") print $(i+1) }')
-}
-
-replace_placeholders() {
-  local placeholder=$1
-  local value_to_replace=$2
-  local file_to_edit=$3
-  # Replace the placeholder with the interface name
-  sed -i "s/$placeholder/$value_to_replace/" ${file_to_edit}
-}
-
-get_hostname
-replace_placeholders $hostname_placeholder $host_name ${dnsmasq_conf_location}
-get_available_interfaces
-find_ipv4_interface
-find_ipv4_address
-replace_placeholders $interface_placeholder $ipv4_interface ${dnsmasq_conf_location}
-find_ipv6_address
-replace_placeholders $ipv6_placeholder $ipv6_address ${dnsmasq_conf_location}
-replace_placeholders $upstream_one_placeholder $upstream_one ${dnsmasq_conf_location}
-replace_placeholders $upstream_two_placeholder $upstream_two ${dnsmasq_conf_location}
-replace_placeholders $log_facility_placeholder $log_facility ${dnsmasq_conf_location}
-replace_placeholders $addn_hosts_placeholder $addn_hosts ${dnsmasq_conf_location}

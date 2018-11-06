@@ -52,6 +52,9 @@ parts:
       perl -p -i -e 's/\/var\/log\//\/var\/snap\/pihole\/common\//g' memory.c
       perl -p -i -e 's/\/etc\/pihole/\/var\/snap\/pihole\/common/g' memory.c
       perl -p -i -e 's/\/etc\/pihole/\/var\/snap\/pihole\/common/g' dnsmasq/config.h
+      perl -p -i -e 's/\/var\/run\//\/var\/snap\/pihole\/common\//g' dnsmasq/config.h
+      perl -p -i -e 's/\/var\/run\//\/var\/snap\/pihole\/common\//g' memory.c
+      perl -p -i -e 's/\/var\/run\/pihole\//\/var\/snap\/pihole\/common\//g' socket_client.c
     override-build: |
       snapcraftctl build
       install -D pihole-FTL $SNAPCRAFT_PART_INSTALL/bin/pihole-FTL
