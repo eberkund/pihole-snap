@@ -10,7 +10,7 @@ confinement: devmode
 
 apps:
   setup:
-    common: bin/setup
+    command: bin/setup
     plugs:
       - network
       - network-control
@@ -33,6 +33,10 @@ parts:
     source: https://ftp.gnu.org/gnu/nettle/nettle-3.4.tar.gz
     plugin: autotools
     install-via: prefix
+    override-build: |
+      ./configure --exec-prefix=/usr/local
+      make
+      make install
   gmp: 
     after: [nettle]
     source: https://gmplib.org/download/gmp/gmp-6.1.2.tar.bz2
