@@ -39,12 +39,6 @@ replace_placeholders() {
   sed -i "s/$placeholder/$value_to_replace/" ${file_to_edit}
 }
 
-find_ipv4_interface
-find_ipv4_address
-find_ipv6_address
-replace_placeholders $interface_placeholder $ipv4_interface $SNAP_COMMON/etc/pihole/setupVars.conf
-replace_placeholders $ipv4_placeholder $ipv4_address $SNAP_COMMON/etc/pihole/setupVars.conf
-replace_placeholders $ipv6_placeholder $ipv6_address $SNAP_COMMON/etc/pihole/setupVars.conf
 # replace_placeholders $upstream_one_placeholder $upstream_one ${dnsmasq_conf_location}
 # replace_placeholders $upstream_two_placeholder $upstream_two ${dnsmasq_conf_location}
 # replace_placeholders $log_facility_placeholder $log_facility ${dnsmasq_conf_location}
@@ -60,6 +54,12 @@ if [ ! -f $DNSMASQDDIR/01-pihole.conf ]; then
   cp $SNAP/configs/setupVars.conf $CONFIGDIR/
   cp $SNAP/configs/gravity.list $CONFIGDIR/
   ln -s $DNSMASQDDIR/01-pihole.conf $SNAP_COMMON/etc/dnsmasq.conf
+  find_ipv4_interface
+  find_ipv4_address
+  find_ipv6_address
+  replace_placeholders $interface_placeholder $ipv4_interface $SNAP_COMMON/etc/pihole/setupVars.conf
+  replace_placeholders $ipv4_placeholder $ipv4_address $SNAP_COMMON/etc/pihole/setupVars.conf
+  replace_placeholders $ipv6_placeholder $ipv6_address $SNAP_COMMON/etc/pihole/setupVars.conf
 fi
 while :; do
     if [ -e "$CONFIGDIR" ]; then
