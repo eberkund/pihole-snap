@@ -13,6 +13,7 @@ then
   if [ $? -eq 0 ];
   then
     snap install $snapname*.snap --dangerous --devmode
+    snap connect pihole:network-control
     if [ $? -eq 0 ];
     then
       echo "Built and installed"

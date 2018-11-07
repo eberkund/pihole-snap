@@ -6,7 +6,7 @@ description: |
   advertisement and network boot. It is designed to be lightweight and have a
   small footprint, suitable for resource constrained routers and firewalls. 
 grade: stable
-confinement: strict
+confinement: devmode
 
 apps:
   pihole-ftl:
@@ -16,7 +16,7 @@ apps:
       - network-bind
       - network-control
   dnsmasqd:
-    daemon: simple
+#    daemon: simple
     command: bin/wrapper
     plugs:
       - network
