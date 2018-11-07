@@ -10,6 +10,12 @@ If you are developing and want to rebuild, we added a `redo` script that does ev
 ./redo.sh
 ```
 
+You can check the status once installed with `systemctl`
+
+```
+systemctl status snap.pihole.dnsmasqd.service
+```
+
 Snapcraft Summit Notes
 ======================
 
