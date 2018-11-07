@@ -70,6 +70,7 @@ parts:
     source: .
     organize:
       wrapper: bin/wrapper
+      setup: bin/setup
   patches:
     source: patches
     plugin: dump
