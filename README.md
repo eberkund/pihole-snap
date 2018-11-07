@@ -53,3 +53,4 @@ Future things
  * Strict confinement
  * Web admin tool
  * Patch upstream pihole-ftl to ifdef $SNAP for paths rather than patch in yaml
+ * Trim down snap to save space

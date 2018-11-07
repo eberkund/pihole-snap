@@ -9,14 +9,19 @@ grade: stable
 confinement: devmode
 
 apps:
-  pihole-ftl:
-    command: bin/pihole-FTL
+  setup:
+    command: bin/setup
+    plugs:
+      - network
+      - network-control
+  pihole-debug:
+    command: bin/pihole-FTL debug
     plugs:
       - network
       - network-bind
       - network-control
-  dnsmasqd:
-#    daemon: simple
+  pihole-daemon:
+    daemon: simple
     command: bin/wrapper
     plugs:
       - network
@@ -28,6 +33,10 @@ parts:
     source: https://ftp.gnu.org/gnu/nettle/nettle-3.4.tar.gz
     plugin: autotools
     install-via: prefix
+    override-build: |
+      ./configure --exec-prefix=/usr/local
+      make
+      make install
   gmp: 
     after: [nettle]
     source: https://gmplib.org/download/gmp/gmp-6.1.2.tar.bz2
@@ -46,6 +55,10 @@ parts:
       - libidn11-dev
       - m4
       - build-essential
+    stage-packages:
+      - whiptail
+      - curl
+      - dialog
     override-pull: |
       snapcraftctl pull
       patch -p1 --verbose < $SNAPCRAFT_STAGE/fix-confined-paths.patch
@@ -57,6 +70,7 @@ parts:
     source: .
     organize:
       wrapper: bin/wrapper
+      setup: bin/setup
   patches:
     source: patches
     plugin: dump
