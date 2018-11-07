@@ -1,11 +1,55 @@
-#!/bin/sh
-
+#!/bin/bash -x
 set -e
 
+# $SNAP_COMMON = /var/snap/pihole/common
 DNSMASQDDIR="$SNAP_COMMON/etc/dnsmasq.d/"
 CONFIGDIR="$SNAP_COMMON/etc/pihole/"
 LOGDIR="$SNAP_COMMON/var/log/"
 SOCKDIR="$SNAP_COMMON/var/run/pihole/"
+public_ipv4_to_check_for="8.8.8.8"
+public_ipv6_to_check_for="2001:4860:4860::8888"
+interface_placeholder="@INT@"
+ipv4_placeholder="@IPV4@"
+ipv6_placeholder="@IPV6@"
+# log_facility_placeholder="@LOGFACILITY@"
+# addn_hosts_placeholder="@ADDNHOSTS@"
+# upstream_one_placeholder="@DNS1@"
+# upstream_two_placeholder="@DNS2@"
+
+find_ipv4_interface() {
+  # Find which interface can reach the Internet
+  ipv4_interface=$(ip route get ${public_ipv4_to_check_for} | awk '{for(i=1;i<=NF;i++)if($i~/dev/)print $(i+1)}')
+}
+
+find_ipv4_address() {
+  # Check the IPv4 address assigned to the interface that can reach the Internet
+	ipv4_address=$(ip -o -f inet addr show dev "$ipv4_interface" | awk '{gsub("/", "", $4); print $4}' | awk 'END {print}')
+}
+
+find_ipv6_address() {
+  # Find the IPv6 address that is used to reach the Internet
+  ipv6_address=$(ip -6 route get ${public_ipv6_to_check_for} | awk -F " " '{ for(i=1;i<=NF;i++) if ($i == "src") print $(i+1) }')
+}
+
+replace_placeholders() {
+  local placeholder=$1
+  local value_to_replace=$2
+  local file_to_edit=$3
+  # Replace the placeholder with the desired value
+  sed -i "s/$placeholder/$value_to_replace/" ${file_to_edit}
+}
+
+find_ipv4_interface
+find_ipv4_address
+find_ipv6_address
+replace_placeholders $interface_placeholder $ipv4_interface $SNAP_COMMON/etc/pihole/setupVars.conf
+replace_placeholders $ipv4_placeholder $ipv4_address $SNAP_COMMON/etc/pihole/setupVars.conf
+replace_placeholders $ipv6_placeholder $ipv6_address $SNAP_COMMON/etc/pihole/setupVars.conf
+# replace_placeholders $upstream_one_placeholder $upstream_one ${dnsmasq_conf_location}
+# replace_placeholders $upstream_two_placeholder $upstream_two ${dnsmasq_conf_location}
+# replace_placeholders $log_facility_placeholder $log_facility ${dnsmasq_conf_location}
+# replace_placeholders $addn_hosts_placeholder $addn_hosts ${dnsmasq_conf_location}
+
 if [ ! -f $DNSMASQDDIR/01-pihole.conf ]; then
   echo "not found"
   mkdir -p $DNSMASQDDIR
@@ -23,4 +67,3 @@ while :; do
     fi
     sleep 5
 done
-
