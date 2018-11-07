@@ -1,0 +1,92 @@
+diff -Naur FTL/config.c FTL-snap/config.c
+--- FTL/config.c	2018-11-06 22:57:03.682524106 +0000
++++ FTL-snap/config.c	2018-11-06 23:22:51.553438618 +0000
+@@ -124,7 +124,7 @@
+ 	if(!(buffer != NULL && sscanf(buffer, "%127ms", &FTLfiles.db)))
+ 	{
+ 		// Use standard path if no custom path was obtained from the config file
+-		FTLfiles.db = strdup("/etc/pihole/pihole-FTL.db");
++		FTLfiles.db = strdup("/var/snap/pihole/common/etc/pihole/pihole-FTL.db");
+ 	}
+ 
+ 	// Test if memory allocation was successful
+diff -Naur FTL/dnsmasq/config.h FTL-snap/dnsmasq/config.h
+--- FTL/dnsmasq/config.h	2018-11-06 22:57:03.686524083 +0000
++++ FTL-snap/dnsmasq/config.h	2018-11-06 23:22:48.437456951 +0000
+@@ -214,7 +214,7 @@
+ #   if defined(__ANDROID__)
+ #      define RUNFILE "/data/dnsmasq.pid"
+ #    else
+-#      define RUNFILE "/var/run/dnsmasq.pid"
++#      define RUNFILE "/var/snap/pihole/common/var/run/dnsmasq.pid"
+ #    endif
+ #endif
+ 
+diff -Naur FTL/memory.c FTL-snap/memory.c
+--- FTL/memory.c	2018-11-06 22:57:03.694524037 +0000
++++ FTL-snap/memory.c	2018-11-06 23:22:53.065429721 +0000
+@@ -11,24 +11,24 @@
+ #include "FTL.h"
+ 
+ FTLFileNamesStruct FTLfiles = {
+-	"/etc/pihole/pihole-FTL.conf",
+-	"/var/log/pihole-FTL.log",
+-	"/var/run/pihole-FTL.pid",
+-	"/var/run/pihole-FTL.port",
++	"/var/snap/pihole/common/etc/pihole/pihole-FTL.conf",
++	"/var/snap/pihole/common/var/log/pihole-FTL.log",
++	"/var/snap/pihole/common/var/run/pihole-FTL.pid",
++	"/var/snap/pihole/common/var/run/pihole-FTL.port",
+ 	NULL,
+-	"/var/run/pihole/FTL.sock"
++	"/var/snap/pihole/common/var/run/pihole/FTL.sock"
+ };
+ 
+ logFileNamesStruct files = {
+-	"/var/log/pihole.log",
+-	"/etc/pihole/list.preEventHorizon",
+-	"/etc/pihole/whitelist.txt",
+-	"/etc/pihole/black.list",
+-	"/etc/pihole/gravity.list",
+-	"/etc/pihole/regex.list",
+-	"/etc/pihole/setupVars.conf",
+-	"/etc/pihole/auditlog.list",
+-	"/etc/dnsmasq.d/01-pihole.conf",
++	"/var/snap/pihole/common/var/log/pihole.log",
++	"/var/snap/pihole/common/etc/pihole/list.preEventHorizon",
++	"/var/snap/pihole/common/etc/pihole/whitelist.txt",
++	"/var/snap/pihole/common/etc/pihole/black.list",
++	"/var/snap/pihole/common/etc/pihole/gravity.list",
++	"/var/snap/pihole/common/etc/pihole/regex.list",
++	"/var/snap/pihole/common/etc/pihole/setupVars.conf",
++	"/var/snap/pihole/common/etc/pihole/auditlog.list",
++	"/var/snap/pihole/common/etc/dnsmasq.d/01-pihole.conf",
+ };
+ 
+ // Fixed size structs
+diff -Naur FTL/socket_client.c FTL-snap/socket_client.c
+--- FTL/socket_client.c	2018-11-06 22:57:03.694524037 +0000
++++ FTL-snap/socket_client.c	2018-11-06 23:22:54.681420214 +0000
+@@ -40,7 +40,7 @@
+ 	address.sun_family = AF_LOCAL;
+ 
+ 	char *command = ">stats";
+-	strcpy(address.sun_path,"/var/run/pihole/FTL.sock");
++	strcpy(address.sun_path,"/var/snap/pihole/common/var/run/pihole/FTL.sock");
+ 
+ 	int i;
+ 	for(i = 1; i < argc; i++) {
+diff -Naur FTL/sqlite3.c FTL-snap/sqlite3.c
+--- FTL/sqlite3.c	2018-11-06 22:57:03.738523780 +0000
++++ FTL-snap/sqlite3.c	2018-11-06 23:22:22.913607124 +0000
+@@ -37234,8 +37234,8 @@
+   static const char *azDirs[] = {
+      0,
+      0,
+-     "/var/tmp",
+-     "/usr/tmp",
++     "/var/snap/pihole/common/var/tmp",
++     "/var/snap/pihole/common/usr/tmp",
+      "/tmp",
+      "."
+   };

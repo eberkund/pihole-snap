@@ -2,13 +2,18 @@
 
 set -e
 
-CONFIG="$SNAP_COMMON"
-if [ ! -f $CONFIG/dnsmasq.conf ]; then
+CONFIGDIR="$SNAP_COMMON/etc/pihole/"
+LOGDIR="$SNAP_COMMON/var/log/"
+SOCKDIR="$SNAP_COMMON/var/run/pihole/"
+if [ ! -f $CONFIGDIR/dnsmasq.conf ]; then
   echo "not found"
-  cp $SNAP/configs/* $CONFIG
+  mkdir -p $CONFIGDIR
+  mkdir -p $LOGDIR
+  mkdir -p $SOCKDIR
+  cp $SNAP/configs/* $CONFIGDIR/
 fi
 while :; do
-    if [ -e "$CONFIG" ]; then
+    if [ -e "$CONFIGDIR" ]; then
         $SNAP/bin/pihole-FTL
     fi
     sleep 5

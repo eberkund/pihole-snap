@@ -37,9 +37,8 @@ parts:
       ./configure
       make
       make install
-      
   pihole-ftl:
-    after: [nettle,gmp]
+    after: [nettle,gmp,patches]
     source: https://github.com/pi-hole/FTL.git
     plugin: make
     build-packages:
@@ -49,12 +48,7 @@ parts:
       - build-essential
     override-pull: |
       snapcraftctl pull
-      perl -p -i -e 's/\/var\/log\//\/var\/snap\/pihole\/common\//g' memory.c
-      perl -p -i -e 's/\/etc\/pihole/\/var\/snap\/pihole\/common/g' memory.c
-      perl -p -i -e 's/\/etc\/pihole/\/var\/snap\/pihole\/common/g' dnsmasq/config.h
-      perl -p -i -e 's/\/var\/run\//\/var\/snap\/pihole\/common\//g' dnsmasq/config.h
-      perl -p -i -e 's/\/var\/run\//\/var\/snap\/pihole\/common\//g' memory.c
-      perl -p -i -e 's/\/var\/run\/pihole\//\/var\/snap\/pihole\/common\//g' socket_client.c
+      patch -p1 --verbose < $SNAPCRAFT_STAGE/fix-confined-paths.patch
     override-build: |
       snapcraftctl build
       install -D pihole-FTL $SNAPCRAFT_PART_INSTALL/bin/pihole-FTL
@@ -63,3 +57,6 @@ parts:
     source: .
     organize:
       wrapper: bin/wrapper
+  patches:
+    source: patches
+    plugin: dump
