@@ -39,10 +39,17 @@ End of day one
         └── pihole-FTL.port
 ```
 
-Future things
+End of day two
 
  * Test it works
-  - Resolve and block
+  - Resolve and block 
+ * Setup script
+  - Setup IP address and populate list of urls
+ * Wrapper script
+  - Update IP in config 
+
+Future things
+
  * First run wizard
   - whiptail added to stage packages
   - install script + gravity components to munge and install block lists
