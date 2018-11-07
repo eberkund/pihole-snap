@@ -15,6 +15,7 @@ if [ ! -f $DNSMASQDDIR/01-pihole.conf ]; then
   cp $SNAP/configs/01-pihole.conf $DNSMASQDDIR/
   cp $SNAP/configs/setupVars.conf $CONFIGDIR/
   cp $SNAP/configs/gravity.list $CONFIGDIR/
+  ln -s $DNSMASQDDIR/01-pihole.conf $SNAP_COMMON/etc/dnsmasq.conf
 fi
 while :; do
     if [ -e "$CONFIGDIR" ]; then
