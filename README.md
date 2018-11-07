@@ -1,4 +1,15 @@
 
+# Building and Installing
+```
+snapcraft
+snap install pihole_4.0_amd64.snap --dangerous --devmode
+```
+
+If you are developing and want to rebuild, we added a `redo` script that does everything for you.
+```
+./redo.sh
+```
+
 Snapcraft Summit Notes
 ======================
 
@@ -32,7 +43,7 @@ Future things
 
  * Test it works
   - Resolve and block
- * First run wizard 
+ * First run wizard
   - whiptail added to stage packages
   - install script + gravity components to munge and install block lists
   - snapctl restart itself
@@ -42,4 +53,3 @@ Future things
  * Strict confinement
  * Web admin tool
  * Patch upstream pihole-ftl to ifdef $SNAP for paths rather than patch in yaml
-
