@@ -1,5 +1,8 @@
 
 # Building and Installing
+
+Note: you cannot currently install this via `snap install pihole` since this repo is incomplete.  If you want to play with it, you'll need to clone the repo, and then run these commands:
+
 ```
 snapcraft
 snap install pihole_4.0_amd64.snap --dangerous --devmode
