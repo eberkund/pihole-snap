@@ -55,6 +55,7 @@ parts:
       - libidn11-dev
       - m4
       - build-essential
+      - libhogweed4
     stage-packages:
       - whiptail
       - curl
