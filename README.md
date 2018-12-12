@@ -1,7 +1,7 @@
 
 # Building and Installing
 
-Note: you cannot currently install this via `snap install pihole` since this repo is incomplete.  If you want to play with it, you'll need to clone the repo, and then run these commands:
+Note: you cannot currently install this via `snap install pihole` since this repo is incomplete.  If you want to play with it, you'll need to clone the repo, and then run these commands (may require root access to install some libraries):
 
 ```
 snapcraft
