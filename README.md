@@ -29,6 +29,7 @@ End of day one
 │   └── pihole
 │       ├── dnsmasq.conf
 │       ├── gravity.list
+│       ├── pihole-FTL.conf
 │       ├── pihole-FTL.db
 │       └── setupVars.conf
 └── var
