@@ -2,9 +2,10 @@ name: pihole-eberkund
 version: "4.0"
 summary: Network infrastructure swiss-army knife
 description: |
-  Dnsmasq provides network infrastructure for small networks: DNS, DHCP, router
+  Dnsmasq provides network infrastructure for small networks -- DNS, DHCP, router
   advertisement and network boot. It is designed to be lightweight and have a
-  small footprint, suitable for resource constrained routers and firewalls. 
+  small footprint, suitable for resource constrained routers and firewalls.
+icon: logo.svg
 grade: stable
 confinement: devmode
 base: core18
@@ -46,13 +47,13 @@ apps:
       - network-control
 
 parts:
-  nettle: 
+  nettle:
     source: https://ftp.gnu.org/gnu/nettle/nettle-3.4.tar.gz
     plugin: autotools
     install-via: prefix
     configflags: ["--exec-prefix=/usr/local"]
 
-  gmp: 
+  gmp:
     after: [nettle]
     source: https://gmplib.org/download/gmp/gmp-6.1.2.tar.bz2
     plugin: autotools
