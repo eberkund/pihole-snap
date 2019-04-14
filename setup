@@ -2,11 +2,6 @@
 
 set -e
 
-DNSMASQDDIR="$SNAP_COMMON/etc/dnsmasq.d/"
-CONFIGDIR="$SNAP_COMMON/etc/pihole/"
-LOGDIR="$SNAP_COMMON/var/log/"
-SOCKDIR="$SNAP_COMMON/var/run/pihole/"
-
 # List of adlist urls
 adlistFile="/var/snap/pihole/common/etc/pihole/adlists.list"
 

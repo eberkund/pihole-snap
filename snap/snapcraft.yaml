@@ -1,5 +1,5 @@
-name: pihole
-version: 4.0
+name: pihole-eberkund
+version: "4.0"
 summary: Network infrastructure swiss-army knife
 description: |
   Dnsmasq provides network infrastructure for small networks: DNS, DHCP, router
@@ -7,6 +7,23 @@ description: |
   small footprint, suitable for resource constrained routers and firewalls. 
 grade: stable
 confinement: devmode
+base: core18
+
+# layout:
+#   /var/run/dnsmasq.pid:
+#     bind-file: $SNAP_COMMON/var/run/dnsmasq.pid
+#   /var/run/pihole/FTL.sock:
+#     bind-file: $SNAP_COMMON/var/run/pihole/FTL.sock
+#   /usr/tmp:
+#     bind: $SNAP_COMMON/usr/tmp
+#   /var/tmp:
+#     bind: $SNAP_COMMON/var/tmp
+
+environment:
+  DNSMASQDDIR: $SNAP_COMMON/etc/dnsmasq.d/
+  CONFIGDIR: $SNAP_COMMON/etc/pihole/
+  LOGDIR: $SNAP_COMMON/var/log/
+  SOCKDIR: $SNAP_COMMON/var/run/pihole/
 
 apps:
   setup:
@@ -33,21 +50,18 @@ parts:
     source: https://ftp.gnu.org/gnu/nettle/nettle-3.4.tar.gz
     plugin: autotools
     install-via: prefix
-    override-build: |
-      ./configure --exec-prefix=/usr/local
-      make
-      make install
+    configflags: ["--exec-prefix=/usr/local"]
+
   gmp: 
     after: [nettle]
     source: https://gmplib.org/download/gmp/gmp-6.1.2.tar.bz2
     plugin: autotools
     override-build: |
       export CFLAGS="-fPIC"
-      ./configure
-      make
-      make install
+      snapcraftctl build
+
   pihole-ftl:
-    after: [nettle,gmp,patches]
+    after: [nettle, gmp, patches]
     source: https://github.com/pi-hole/FTL.git
     plugin: make
     build-packages:
@@ -56,22 +70,27 @@ parts:
       - m4
       - build-essential
       - libhogweed4
+      - nettle-dev
+      - libcap2-bin
     stage-packages:
       - whiptail
       - curl
       - dialog
+      - libslang2
     override-pull: |
       snapcraftctl pull
       patch -p1 --verbose < $SNAPCRAFT_STAGE/fix-confined-paths.patch
     override-build: |
       snapcraftctl build
       install -D pihole-FTL $SNAPCRAFT_PART_INSTALL/bin/pihole-FTL
+
   wrapper:
     plugin: dump
     source: .
     organize:
       wrapper: bin/wrapper
       setup: bin/setup
+
   patches:
     source: patches
     plugin: dump
